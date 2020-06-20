@@ -9,55 +9,48 @@ import org.testng.annotations.Test;
 public class ProfileVisibilityTests extends TestBase {
 
     @BeforeMethod
-    public void initTests() throws InterruptedException {
+    public void initTests() {
         driver.findElement(By.linkText("Log In")).click();
-        Thread.sleep(5000);
+        waitUntilElementIsClickable(By.id("login"),10);
 
         driver.findElement(By.id("user")).sendKeys(LOGIN);
-        Thread.sleep(2000);
+        waitUntilAttributeValueIs(By.id("login"),"value","Log in with Atlassian",10);
         driver.findElement(By.id("login")).click();
-        Thread.sleep(10000);
+        waitUntilElementIsClickable(By.id("login-submit"),15);
 
         driver.findElement(By.id("password")).sendKeys(PASSWORD);
-        Thread.sleep(2000);
         driver.findElement(By.id("login-submit")).click();
-        Thread.sleep(25000);
-
-        System.out.println("'Boards' button text: " + driver
-                .findElement(By.xpath("//button[@data-test-id='header-boards-menu-button']/span[2]")).getText());
-        Thread.sleep(3000);
+        waitUntilElementIsClickable(By.xpath("//button[@data-test-id='header-boards-menu-button']/span[2]"),40);
 
         WebElement menuButton = driver.findElement(By.xpath("//button[@aria-label='Open Member Menu']"));
         menuButton.click();
-        Thread.sleep(2000);
+        waitUntilElementIsClickable(By.xpath("//a[@data-test-id='header-member-menu-profile']"),10);
 
         WebElement profileAndVisibilityListItem = driver.findElement(By.xpath("//a[@data-test-id='header-member-menu-profile']"));
         profileAndVisibilityListItem.click();
-        Thread.sleep(5000);
+        waitUntilElementIsVisible(By.xpath(nameLocator(NAME_TITLE)),10);
+        waitUntilElementIsClickable(By.xpath("//a[@data-tab='profile']"),10);
     }
+
     @Test
-    public void labelTextVerificationTest() throws InterruptedException {
+    public void labelTextVerificationTest() {
         WebElement menuLabel = driver.findElement(By.xpath("//button[@aria-label='Open Member Menu']"));
         System.out.println("Menu button text: " + menuLabel.getText());
-        Thread.sleep(5000);
+        waitUntilElementIsVisible(By.xpath(nameLocator(NAME_TITLE)),10);
 
         WebElement nameLabel = driver.findElement(By.xpath(nameLocator(NAME_TITLE)));
         System.out.println("Name icon text: " + nameLabel.getText());
-        Thread.sleep(5000);
-
         Assert.assertEquals(menuLabel.getText(),nameLabel.getText(),"'Open Menu Button' and 'Name Icon' have a different names");
     }
 
     @Test
-    public void userNameVerificationTest() throws InterruptedException {
+    public void userNameVerificationTest() {
         WebElement userNameProfile = driver.findElement(By.xpath(userNameTitleLocator(USERNAME_TITLE)));
         System.out.println("User name Profile: "+userNameProfile.getText());
-        Thread.sleep(3000);
+        waitUntilElementIsVisible(By.xpath("//input[@autocomplete='username']"),10);
 
-        WebElement userName = driver.findElement(By.name("username"));
+        WebElement userName = driver.findElement(By.xpath("//input[@autocomplete='username']"));
         System.out.println("User name text: @"+ userName.getAttribute("value"));
-        Thread.sleep(3000);
-
         Assert.assertEquals(userNameProfile.getText(),"@"+userName.getAttribute("value"),"'User name Profile' and 'User name' have a different names");
     }
 

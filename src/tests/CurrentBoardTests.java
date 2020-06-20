@@ -15,63 +15,56 @@ import java.util.List;
 public class CurrentBoardTests extends TestBase {
 
     @BeforeMethod
-    public void initTests() throws InterruptedException {
+    public void initTests() {
         driver.findElement(By.linkText("Log In")).click();
-        Thread.sleep(5000);
+        waitUntilElementIsClickable(By.id("login"),10);
 
         driver.findElement(By.id("user")).sendKeys(LOGIN);
-        Thread.sleep(2000);
+        waitUntilAttributeValueIs(By.id("login"),"value","Log in with Atlassian",10);
         driver.findElement(By.id("login")).click();
-        Thread.sleep(10000);
+        waitUntilElementIsClickable(By.id("login-submit"),15);
 
         driver.findElement(By.id("password")).sendKeys(PASSWORD);
-        Thread.sleep(2000);
         driver.findElement(By.id("login-submit")).click();
-        Thread.sleep(30000);
+        waitUntilElementIsClickable(By.xpath("//button[@data-test-id='header-boards-menu-button']/span[2]"),40);
 
-        System.out.println("'Boards' button text: " + driver
-                .findElement(By.xpath("//button[@data-test-id='header-boards-menu-button']/span[2]")).getText());
-        Thread.sleep(5000);
-
-        WebElement ourBoard = driver
-                .findElement(By.xpath(boardLocator(BOARD_TITLE)));
+        WebElement ourBoard = driver.findElement(By.xpath(boardLocator(BOARD_TITLE)));
         ourBoard.click();
-        Thread.sleep(5000);
+        waitUntilElementIsVisible(By.xpath("//span[contains(text(),'QA Haifa56')]"),10);
+        waitUntilElementIsClickable(By.xpath("//span[@class='placeholder']"),10);
     }
 
     @Test
-    public void createNewList() throws InterruptedException {
+    public void createNewList() {
         List<WebElement> listLists = driver.findElements(By.cssSelector("div.list.js-list-content"));
         int beforeAdding = listLists.size();
         System.out.println("Lists before adding: " + beforeAdding);
 
         WebElement addListOption = driver.findElement(By.xpath("//span[@class='placeholder']"));
         addListOption.click();
+        waitUntilElementIsVisible(By.xpath("//input[@placeholder='Enter list title...']"),10);
         WebElement addTitleField = driver.findElement(By.xpath("//input[@placeholder = 'Enter list title...']"));
 
         addTitleField.click();
         addTitleField.sendKeys("Tasks in process");
-        Thread.sleep(2000);
+        waitUntilElementIsClickable(By.xpath("//input[@type='submit']"),10);
 
         WebElement addListButton = driver.findElement(By.xpath("//input[@type='submit']"));
         addListButton.click();
-        Thread.sleep(5000);
+        waitUntilElementIsClickable(By.xpath("//a[@class='icon-lg icon-close dark-hover js-cancel-edit']"),10);
 
         WebElement cancelEdit = driver.findElement(By.xpath("//a[@class='icon-lg icon-close dark-hover js-cancel-edit']"));
         cancelEdit.click();
-        Thread.sleep(2000);
 
         listLists = driver.findElements(By.cssSelector("div.list.js-list-content"));
         int afterAdding = listLists.size();
         System.out.println("Lists after adding: " + afterAdding);
-        Thread.sleep(5000);
-
         Assert.assertEquals(afterAdding, beforeAdding+1,
                 "The quantity of lists before adding new list is not the same as the quantity after adding");
     }
 
     @Test
-    public void createNewCard() throws InterruptedException {
+    public void createNewCard() {
         List<WebElement> listCards = driver.findElements(By.cssSelector("a.list-card.js-member-droppable.ui-droppable"));
         int beforeAdding = listCards.size();
         System.out.println("Cards before adding: " + beforeAdding);
@@ -82,29 +75,28 @@ public class CurrentBoardTests extends TestBase {
         {
             existList = true;
         }
-
             if (!existList){
                 System.out.println("Lists before adding: " + driver.
                         findElements(By.xpath("//div[@class = 'list js-list-content']")).size());
                 WebElement addListOption = driver.findElement(By.xpath("//span[@class='placeholder']"));
                 addListOption.click();
+                waitUntilElementIsVisible(By.xpath("//input[@placeholder='Enter list title...']"),10);
                 WebElement addTitleField = driver.findElement(By.xpath("//input[@placeholder = 'Enter list title...']"));
 
                 addTitleField.click();
                 addTitleField.sendKeys("Tasks in process");
-                Thread.sleep(2000);
+                waitUntilElementIsClickable(By.xpath("//input[@type='submit']"),10);
 
                 WebElement addListButton = driver.findElement(By.xpath("//input[@type='submit']"));
                 addListButton.click();
-                Thread.sleep(5000);
+                waitUntilElementIsClickable(By.xpath("//a[@class='icon-lg icon-close dark-hover js-cancel-edit']"),10);
 
                 WebElement cancelEdit = driver.findElement(By.xpath("//a[@class='icon-lg icon-close dark-hover js-cancel-edit']"));
                 cancelEdit.click();
-                Thread.sleep(2000);
                 System.out.println("Lists after adding: " + driver.
                         findElements(By.xpath("//div[@class = 'list js-list-content']")).size());
             }
-        Thread.sleep(10000);
+       waitUntilElementIsVisible(By.xpath("//div[@class='list-header-target js-editing-target']") ,10);
 
        WebElement addCardButton = driver.findElement(By.cssSelector("span.js-add-a-card"));
        WebElement addAnotherCardButton = driver.findElement(By.cssSelector("span.js-add-another-card"));
@@ -112,24 +104,23 @@ public class CurrentBoardTests extends TestBase {
            addCardButton.click();
        }
        else addAnotherCardButton.click();
-       Thread.sleep(5000);
+       waitUntilElementIsVisible(By.cssSelector("textarea.list-card-composer-textarea"),10);
+
        WebElement textCurrentCard = driver.findElement(By.cssSelector("textarea.list-card-composer-textarea"));
-       textCurrentCard.click();
        textCurrentCard.sendKeys("New card");
-       Thread.sleep(2000);
+       waitUntilElementIsClickable(By.xpath("//input[@type='submit'][@value = 'Add Card']"),10);
+
        WebElement submitCardButton = driver.findElement(By.xpath("//input[@type='submit'][@value = 'Add Card']"));
        submitCardButton.click();
-       Thread.sleep(2000);
+       waitUntilElementIsClickable(By.cssSelector("div.card-composer a.icon-close"),10);
+
        WebElement cancelEditCardButton = driver.findElement(By.cssSelector("div.card-composer a.icon-close"));
        cancelEditCardButton.click();
-       Thread.sleep(3000);
 
-        listCards = driver.findElements(By.cssSelector("a.list-card.js-member-droppable.ui-droppable"));
-        int afterAdding = listCards.size();
-        System.out.println("Cards after adding: " + afterAdding);
-        Thread.sleep(5000);
-
-        Assert.assertEquals(afterAdding, beforeAdding+1,
+       listCards = driver.findElements(By.cssSelector("a.list-card.js-member-droppable.ui-droppable"));
+       int afterAdding = listCards.size();
+       System.out.println("Cards after adding: " + afterAdding);
+       Assert.assertEquals(afterAdding, beforeAdding+1,
                 "The quantity of cards before adding new card is not the same as the quantity after adding");
     }
 

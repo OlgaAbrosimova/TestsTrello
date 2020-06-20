@@ -4,6 +4,8 @@ import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.chrome.ChromeDriver;
+import org.openqa.selenium.support.ui.ExpectedConditions;
+import org.openqa.selenium.support.ui.WebDriverWait;
 import org.testng.Assert;
 import org.testng.annotations.AfterMethod;
 import org.testng.annotations.BeforeMethod;
@@ -12,90 +14,81 @@ import org.testng.annotations.Test;
 public class LoginTests extends TestBase {
 
     @Test
-    public void loginTestPositive () throws InterruptedException {
+    public void loginTestPositive () {
         driver.findElement(By.linkText("Log In")).click();
-        Thread.sleep(5000);
+        waitUntilElementIsClickable(By.id("login"),10);
 
         WebElement loginField = driver.findElement(By.id("user"));
         loginField.sendKeys(LOGIN);
-        Thread.sleep(2000);
+        waitUntilAttributeValueIs(By.id("login"),"value","Log in with Atlassian",10);
+
         WebElement loginButton = driver.findElement(By.id("login"));
         loginButton.click();
-        Thread.sleep(10000);
+        waitUntilElementIsClickable(By.id("login-submit"),15);
 
         WebElement passwordField = driver.findElement(By.id("password"));
         passwordField.sendKeys(PASSWORD);
         WebElement loginSubmitButton = driver.findElement(By.id("login-submit"));
         loginSubmitButton.click();
-        Thread.sleep(35000);
+        waitUntilElementIsClickable(By.xpath("//button[@data-test-id='header-boards-menu-button']/span[2]"),40);
 
         WebElement boardIcon = driver.findElement(By.xpath("//button[@data-test-id='header-boards-menu-button']/span[2]"));
-        System.out.println("'Boards' button text: " + boardIcon.getText());
-        Thread.sleep(5000);
         Assert.assertEquals("Boards", boardIcon.getText(),"Text on the boardIcon is not 'Boards'");
     }
 
+
+
     @Test
-    public void NegativeLoginIncorrect() throws InterruptedException {
+    public void NegativeLoginIncorrect() {
         driver.findElement(By.linkText("Log In")).click();
-        Thread.sleep(5000);
+        waitUntilElementIsClickable(By.id("login"),10);
 
         WebElement loginField = driver.findElement(By.id("user"));
         loginField.sendKeys("gftov0122334556@gmail.com");
-        Thread.sleep(7000);
+        waitUntilAttributeValueIs(By.id("login"),"value","Log in",10);
 
         WebElement loginButton = driver.findElement(By.id("login"));
         loginButton.click();
-        Thread.sleep(10000);
+        waitUntilElementIsVisible(By.xpath("//div[@id = 'error']/p"),20);
 
         WebElement errorMessage = driver.findElement(By.xpath("//div[@id = 'error']/p"));
         System.out.println("Error message: " + errorMessage.getText());
-        Thread.sleep(5000);
-
         Assert.assertEquals("There isn't an account for this email",errorMessage.getText(),"Error text is not 'There isn't an account for this email'");
     }
     @Test
-    public void NegativePasswordIncorrect() throws InterruptedException {
+    public void NegativePasswordIncorrect() {
         driver.findElement(By.linkText("Log In")).click();
-        Thread.sleep(5000);
+        waitUntilElementIsClickable(By.id("login"),10);
 
         WebElement loginField = driver.findElement(By.id("user"));
         loginField.sendKeys(LOGIN);
-        Thread.sleep(5000);
+        waitUntilAttributeValueIs(By.id("login"),"value","Log in with Atlassian",10);
 
         WebElement loginButton = driver.findElement(By.id("login"));
         loginButton.click();
-        Thread.sleep(5000);
+        waitUntilElementIsClickable(By.id("login-submit"),15);
 
         WebElement passwordField = driver.findElement(By.id("password"));
         passwordField.sendKeys("Victor");
-        Thread.sleep(5000);
 
         WebElement loginSubmitButton = driver.findElement(By.id("login-submit"));
         loginSubmitButton.click();
-        Thread.sleep(8000);
+        waitUntilElementIsVisible(By.cssSelector("#login-error>span"),10);
 
         WebElement errorMessage = driver.findElement(By.cssSelector("#login-error>span"));
         System.out.println("Error message: " + errorMessage.getText());
-        Thread.sleep(5000);
-
-        Assert.assertEquals("Incorrect email address and / or password.\n" +
-                "Do you need help logging in?",errorMessage.getText(),"Error text is not 'Incorrect email address and / or password.Do you need help logging in?'");
+        Assert.assertTrue(errorMessage.getText().contains("Incorrect email address and / or password."),"There is no error message or the text of the message is not correct");
     }
     @Test
-    public void loginNegativeNoLoginNoPassword() throws InterruptedException {
+    public void loginNegativeNoLoginNoPassword() {
         driver.findElement(By.linkText("Log In")).click();
-        Thread.sleep(5000);
+        waitUntilElementIsClickable(By.id("login"),10);
 
         driver.findElement(By.id("login")).click();
-        Thread.sleep(5000);
+        waitUntilElementIsVisible(By.cssSelector("#error>p"),10);
 
         WebElement errorMessage = driver.findElement(By.cssSelector("#error>p"));
         System.out.println("Error message: " + errorMessage.getText());
-        Thread.sleep(5000);
-
-        Assert.assertEquals("Missing email",errorMessage.getText(),"Error text is not 'Missing email'");
+        Assert.assertTrue(errorMessage.getText().equals("Missing email"));
     }
-
-
 }
